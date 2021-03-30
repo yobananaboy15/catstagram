@@ -16,8 +16,6 @@ app.use(cors())
 
 //app.use(mina routes)
 
-//Koppla upp sig mot databasennsssss
-
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(`${process.env.CONNECTION_URL}`, {
