@@ -1,13 +1,18 @@
-import mongoose from 'mongoose';
-import Post from "../models/post"
+import Post from "../models/post";
+import {Request, Response, NextFunction} from 'express';
 
-//Funktion för att hämta alla poster
+type routeHandler = (
+    req: Request,
+    res: Response,
+    next?: NextFunction
+) => unknown
 
-export const getPosts = () => {
+export const getPosts: routeHandler = async (req: Request, res: Response) => {
     try {
-        
+        const posts = await Post.find()
+        console.log(posts)
+        res.status(200).json(posts)
     } catch (error) {
         
     }
-    // const posts = Post.find()
 }

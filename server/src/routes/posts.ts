@@ -1,12 +1,11 @@
-import express, {Request, Response} from 'express';
+import {Router} from 'express';
+import { getPosts } from '../controllers/posts';
 
 //Importera funktioner från controllers
 
-const router = express.Router();
+const router = Router();
 
-router.get("/", (req: Request, res: Response) => {
-    //Hämta alla poster
-})
+router.get("/", getPosts)
 
 router.post("/")
 

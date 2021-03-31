@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv'
 
 //Importera mina routes.
+import postsRouter from "./routes/posts"
 
 const app = express();
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(cors())
 
 //app.use(mina routes)
+app.use("/posts", postsRouter)
 
 const PORT = process.env.PORT || 5000;
 
