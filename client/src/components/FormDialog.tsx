@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import {uploadPost} from "../api/index";
+import {storage} from '../firebase/index'
 
 export const FormDialog = () => {
   
@@ -17,8 +18,7 @@ export const FormDialog = () => {
   }
 
   const [formData, setFormData] = useState<{} | formData>({})
-  const [image, setImage] = useState<null | {file: File}>(null)
-  console.log(image)
+  const [image, setImage] = useState<null | File >(null)
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -32,8 +32,8 @@ export const FormDialog = () => {
   };
 
   const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if( e.currentTarget.files !== null){
-        setImage({file: e.currentTarget.files[0]})
+      if(e.currentTarget.files !== null){
+        setImage(e.currentTarget.files[0])
       }
   }
 
@@ -43,11 +43,33 @@ export const FormDialog = () => {
   }
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-      //Skapa new FormData
-      uploadPost(formData)
-      handleClose();
-      //Hämta den nya posten och lägg till den i posterna i app.jsxs state.
+      //Skapa new FormData som skickas till firebas
+      //Hämta URLn och lägg till den i formData
+      //dela upp i databas
 
+    if(image !== null){
+      //Gör om detta till en hook?
+      const uploadTask = storage.ref(`images/${image.name}`).put(image);
+      uploadTask.on(
+        "state_changed",
+        snapshot => {},
+        error => {
+          console.log(error)
+        },
+        () => {
+          storage
+            .ref('images')
+            .child(image.name)
+            .getDownloadURL()
+            .then(url => {
+              console.log(url)
+              uploadPost({...formData, imgURL: url})
+              handleClose();
+            })
+        }
+      )
+    }
+      //Hämta den nya posten och lägg till den i posterna i app.jsxs state.
   }
 
 
