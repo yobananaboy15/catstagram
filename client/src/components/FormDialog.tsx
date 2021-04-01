@@ -6,16 +6,19 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {uploadPost} from "../api/index";
 
 export const FormDialog = () => {
-
+  
   interface formData {
     description?: string,
     tags?: string,
-    //FILE!
+    imageURL: string
   }
-  //Fixa state för formuläret.
-  const [formData, setFormData] = useState({})
+
+  const [formData, setFormData] = useState<{} | formData>({})
+  const [image, setImage] = useState<null | {file: File}>(null)
+  console.log(image)
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -25,7 +28,28 @@ export const FormDialog = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setImage(null)
   };
+
+  const uploadImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if( e.currentTarget.files !== null){
+        setImage({file: e.currentTarget.files[0]})
+      }
+  }
+
+  const changeFormData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const {id, value} =  e.currentTarget
+    setFormData({...formData, [id]: value})
+  }
+
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+      //Skapa new FormData
+      uploadPost(formData)
+      handleClose();
+      //Hämta den nya posten och lägg till den i posterna i app.jsxs state.
+
+  }
+
 
   return (
     <div>
@@ -42,18 +66,28 @@ export const FormDialog = () => {
           <TextField
             autoFocus
             margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
+            id="description"
+            label="description"
+            type="text"
             fullWidth
+            onChange={changeFormData}
           />
+           <TextField
+            autoFocus
+            margin="dense"
+            id="tags"
+            label="tags"
+            type="text"
+            fullWidth
+            onChange={changeFormData}
+          />
+          <label htmlFor="file">Select file</label>
+          <input type="file" id="file" onChange={uploadImage}/>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Subscribe
+         
+          <Button onClick={handleSubmit} color="primary">
+            Upload
           </Button>
         </DialogActions>
       </Dialog>

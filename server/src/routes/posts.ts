@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { getPosts } from '../controllers/posts';
+import { getPosts, addPost } from '../controllers/posts';
 
 //Importera funktioner från controllers
 
@@ -7,7 +7,7 @@ const router = Router();
 
 router.get("/", getPosts)
 
-router.post("/")
+router.post("/", addPost)
 
 router.patch("/:id")
 

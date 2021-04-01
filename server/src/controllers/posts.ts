@@ -7,12 +7,23 @@ type routeHandler = (
     next?: NextFunction
 ) => unknown
 
-export const getPosts: routeHandler = async (req: Request, res: Response) => {
+export const getPosts: routeHandler = async (req, res) => {
     try {
         const posts = await Post.find()
         console.log(posts)
         res.status(200).json(posts)
     } catch (error) {
         
+    }
+}
+
+export const addPost: routeHandler = async (req, res) => {
+    const post = req.body;
+    const newPost = new Post(post)
+    try {
+        await newPost.save()
+        res.status(201).json(newPost)
+    } catch (error) {
+        res.status(409).json(error)
     }
 }

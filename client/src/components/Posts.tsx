@@ -4,7 +4,8 @@ import {getPosts} from '../api/index'
 export const Posts = () => {
 
     interface postObject {
-        kek: string
+        description: string,
+        tags: string
     }
 
     const [posts, setPosts] = useState<postObject[]>([]);
@@ -12,7 +13,6 @@ export const Posts = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             const result = await getPosts();
-            console.log('fetchd')
             setPosts(result.data)
         }
         fetchPosts()
@@ -20,8 +20,9 @@ export const Posts = () => {
     
 
     return (
+        //Gör om till post component
         <div>
-            {posts.length ? posts.map(post => <p>{post.kek}</p>) : 'Loading posts'}
+            {posts.length ? posts.map(post => <p>{post.description} {post.tags}</p>) : 'Loading posts'}
         </div>
     )
 }
