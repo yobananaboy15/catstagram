@@ -43,11 +43,10 @@ export const FormDialog = () => {
   }
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-      //Skapa new FormData som skickas till firebas
-      //Hämta URLn och lägg till den i formData
-      //dela upp i databas
+
 
     if(image !== null){
+      //Add file to firebase storage
       //Gör om detta till en hook?
       const uploadTask = storage.ref(`images/${image.name}`).put(image);
       uploadTask.on(
@@ -69,7 +68,7 @@ export const FormDialog = () => {
         }
       )
     }
-      //Hämta den nya posten och lägg till den i posterna i app.jsxs state.
+      //Hämta den nya posten och lägg till den i posterna i app.jsxs state. eller oContext
   }
 
 
