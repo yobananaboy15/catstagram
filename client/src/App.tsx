@@ -18,11 +18,7 @@ export const App = () => {
     </Container>
   </AppBar>
   <Container>
-    <Grid container>
-      <Grid item>
         <Posts />
-      </Grid>
-    </Grid>
   </Container>
   </>
   )
