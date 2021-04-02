@@ -18,7 +18,7 @@ export const App = () => {
     </Container>
   </AppBar>
   <Container>
-        <Posts />
+    <Posts />
   </Container>
   </>
   )
