@@ -1,7 +1,11 @@
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 
-export const ImageCropper = (image: string) => {
+type ImageCropperProps = {
+  imageStr: string;
+};
+
+export const ImageCropper = ({ imageStr }: ImageCropperProps) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -9,14 +13,13 @@ export const ImageCropper = (image: string) => {
   }, []);
 
   return (
-    <div>
-      <Cropper
-        image={image}
-        crop={crop}
-        aspect={1}
-        onCropChange={setCrop}
-        onCropComplete={onCropComplete}
-      />
-    </div>
+    <Cropper
+      image={imageStr}
+      crop={crop}
+      aspect={1}
+      onCropChange={setCrop}
+      onCropComplete={onCropComplete}
+      style={{ cropAreaStyle: { color: "red" } }}
+    />
   );
 };
