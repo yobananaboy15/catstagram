@@ -10,6 +10,8 @@ import { uploadPost } from "../api/index";
 import { storage } from "../firebase/index";
 import { ImageCropper } from "./ImageCropper";
 import useStyles from "./styles";
+import { stringify } from "node:querystring";
+import { Point } from "react-easy-crop/types";
 
 export const FormDialog = () => {
   const classes = useStyles();
@@ -28,6 +30,7 @@ export const FormDialog = () => {
   const [formData, setFormData] = useState<{} | formData>({});
   const [imageStr, setImageStr] = useState("");
   const [imageFile, setImageFile] = useState<null | File>(null);
+  const [imgCoordinates, setImgCoordinates] = useState<Point>({ x: 0, y: 0 });
   const [open, setOpen] = useState(false);
 
   //On change, takes the new img file and converts it to base64 and checks if it's big enough
@@ -69,6 +72,10 @@ export const FormDialog = () => {
       img.src = imgStr;
     });
   };
+
+  //Sätt cropper x-y state här skapa skicka ner till imagecropper.
+  //När man trycker på submit, trigga funktionen här som skapar bilden
+  //
 
   //Functions for handling the modal
   const handleClickOpen = () => {
@@ -150,7 +157,13 @@ export const FormDialog = () => {
           </Button>
         </DialogActions>
         <div className={classes.cropperContainer}>
-          {imageStr && <ImageCropper imageStr={imageStr} />}
+          {imageStr && (
+            <ImageCropper
+              imageStr={imageStr}
+              cropCoordinates={imgCoordinates}
+              onCropChange={setImgCoordinates}
+            />
+          )}
         </div>
       </Dialog>
     </div>

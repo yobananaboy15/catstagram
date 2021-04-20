@@ -1,24 +1,24 @@
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
+import { Point } from "react-easy-crop/types";
 
 type ImageCropperProps = {
   imageStr: string;
+  cropCoordinates: Point;
+  onCropChange: React.Dispatch<React.SetStateAction<Point>>;
 };
 
-export const ImageCropper = ({ imageStr }: ImageCropperProps) => {
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-
-  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
-    console.log(croppedArea, croppedAreaPixels);
-  }, []);
-
+export const ImageCropper = ({
+  imageStr,
+  cropCoordinates,
+  onCropChange,
+}: ImageCropperProps) => {
   return (
     <Cropper
       image={imageStr}
-      crop={crop}
+      crop={cropCoordinates}
       aspect={1}
-      onCropChange={setCrop}
-      onCropComplete={onCropComplete}
+      onCropChange={onCropChange}
       style={{ cropAreaStyle: { color: "red" } }}
     />
   );
