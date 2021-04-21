@@ -141,6 +141,7 @@ export const FormDialog = () => {
           .put(imageData)
           .then((snapshot) => snapshot.ref.getDownloadURL())
           .then((url) => {
+            //Här kommer posten tillbaka, uppdatera context.
             uploadPost({ ...formData, imgURL: url });
             handleClose();
           });
