@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Grid, CircularProgress } from "@material-ui/core";
 import { getPosts } from "../api/index";
 import { Post } from "./Post";
+import { PostsContext } from "../contexts/PostsContext";
 
-interface Post {
-  _id: object;
-  description?: string;
-  tags?: string;
-  imgURL: string;
-}
+// interface Post {
+//   _id: object;
+//   description?: string;
+//   tags?: string;
+//   imgURL: string;
+// }
 export const Posts = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { posts, setPosts } = useContext(PostsContext); //Hämta detta från context
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
