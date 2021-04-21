@@ -59,7 +59,6 @@ export const FormDialog = () => {
 
   //Takes the user uploaded file and converts it to base64
   const readFile = (file: File) => {
-    //Kolla om det här är en bild. Om inte, skicka tillbaka false
     return new Promise<String | ArrayBuffer | null>((resolve) => {
       const reader = new FileReader();
       reader.addEventListener("load", () => resolve(reader.result), false);
@@ -140,9 +139,9 @@ export const FormDialog = () => {
           .ref("images")
           .child(uuidv4())
           .put(imageData)
+          .then((snapshot) => snapshot.ref.getDownloadURL())
           .then((url) => {
-            console.log(url);
-            // uploadPost({ ...formData, imgURL: url });
+            uploadPost({ ...formData, imgURL: url });
             handleClose();
           });
       }
