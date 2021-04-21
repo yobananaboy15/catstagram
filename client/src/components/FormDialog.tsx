@@ -10,8 +10,8 @@ import { uploadPost } from "../api/index";
 import { storage } from "../firebase/index";
 import { ImageCropper } from "./ImageCropper";
 import useStyles from "./styles";
-import { stringify } from "node:querystring";
-import { Point } from "react-easy-crop/types";
+import { Area } from "react-easy-crop/types";
+import { v4 as uuidv4 } from "uuid";
 
 export const FormDialog = () => {
   const classes = useStyles();
@@ -29,10 +29,16 @@ export const FormDialog = () => {
 
   const [formData, setFormData] = useState<{} | formData>({});
   const [imageStr, setImageStr] = useState("");
-  const [imageFile, setImageFile] = useState<null | File>(null);
-  const [imgCoordinates, setImgCoordinates] = useState<Point>({ x: 0, y: 0 });
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>({
+    x: 0,
+    y: 0,
+    height: 0,
+    width: 0,
+  });
+  // const [imageFile, setImageFile] = useState<null | Blob>(null);
   const [open, setOpen] = useState(false);
 
+  //Uppdatera state?
   //On change, takes the new img file and converts it to base64 and checks if it's big enough
   const uploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.files !== null) {
@@ -51,9 +57,8 @@ export const FormDialog = () => {
     }
   };
 
-  //Takes the file and converts it to base64
+  //Takes the user uploaded file and converts it to base64
   const readFile = (file: File) => {
-    console.log(file);
     //Kolla om det här är en bild. Om inte, skicka tillbaka false
     return new Promise<String | ArrayBuffer | null>((resolve) => {
       const reader = new FileReader();
@@ -62,7 +67,7 @@ export const FormDialog = () => {
     });
   };
 
-  //Returns promise that resolves with the px height and width of user selected img
+  //Returns promise that resolves with the px height and width of user selected img. Den här funktionen kan använda sig av create image.
   const getUploadedFileDimensions = (imgStr: string) => {
     return new Promise<ImageValue>((resolve) => {
       let img = new Image();
@@ -73,9 +78,41 @@ export const FormDialog = () => {
     });
   };
 
-  //Sätt cropper x-y state här skapa skicka ner till imagecropper.
-  //När man trycker på submit, trigga funktionen här som skapar bilden
-  //
+  const createImage = (url: string) => {
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener("load", () => resolve(image));
+      image.addEventListener("error", () => reject(Error));
+      image.src = url;
+    });
+  };
+
+  const getCroppedImage = async (imgStr: string, crop: Area) => {
+    const image = await createImage(imgStr);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = 600;
+    canvas.height = 600;
+
+    ctx?.drawImage(
+      image,
+      crop.x,
+      crop.y,
+      crop.width,
+      crop.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    return new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, "image/jpeg");
+    });
+  };
 
   //Functions for handling the modal
   const handleClickOpen = () => {
@@ -94,30 +131,24 @@ export const FormDialog = () => {
 
   //Sends picture to firebase on submit
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    // if (imageStr) {
-    //   const uploadTask = storage.ref(`images/${imageFile.name}`).put(imageFile);
-    //   uploadTask.on(
-    //     "state_changed",
-    //     (snapshot) => {},
-    //     (error) => {
-    //       console.log(error);
-    //     },
-    //     () => {
-    //       storage
-    //         .ref("images")
-    //         .child(imageFile.name)
-    //         .getDownloadURL()
-    //         .then((url) => {
-    //           console.log(url);
-    //           uploadPost({ ...formData, imgURL: url });
-    //           handleClose();
-    //         });
-    //     }
-    //   );
-    // }
+    e.preventDefault();
+
+    if (true) {
+      const imageData = await getCroppedImage(imageStr, croppedAreaPixels);
+      if (imageData !== null) {
+        storage
+          .ref("images")
+          .child(uuidv4())
+          .put(imageData)
+          .then((url) => {
+            console.log(url);
+            // uploadPost({ ...formData, imgURL: url });
+            handleClose();
+          });
+      }
+    }
   };
 
-  //Om det finns en bild, rendera cropper
   return (
     <div>
       <Button variant="outlined" color="secondary" onClick={handleClickOpen}>
@@ -160,8 +191,7 @@ export const FormDialog = () => {
           {imageStr && (
             <ImageCropper
               imageStr={imageStr}
-              cropCoordinates={imgCoordinates}
-              onCropChange={setImgCoordinates}
+              setCroppedAreaPixels={setCroppedAreaPixels}
             />
           )}
         </div>
