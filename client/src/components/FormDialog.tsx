@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -12,6 +12,7 @@ import { ImageCropper } from "./ImageCropper";
 import useStyles from "./styles";
 import { Area } from "react-easy-crop/types";
 import { v4 as uuidv4 } from "uuid";
+import { PostsContext } from "../contexts/PostsContext";
 
 export const FormDialog = () => {
   const classes = useStyles();
@@ -29,14 +30,14 @@ export const FormDialog = () => {
 
   const [formData, setFormData] = useState<{} | formData>({});
   const [imageStr, setImageStr] = useState("");
+  const { posts, setPosts } = useContext(PostsContext);
+  const [open, setOpen] = useState(false);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>({
     x: 0,
     y: 0,
     height: 0,
     width: 0,
   });
-  // const [imageFile, setImageFile] = useState<null | Blob>(null);
-  const [open, setOpen] = useState(false);
 
   //Uppdatera state?
   //On change, takes the new img file and converts it to base64 and checks if it's big enough
@@ -132,7 +133,7 @@ export const FormDialog = () => {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (true) {
+    if (imageStr) {
       const imageData = await getCroppedImage(imageStr, croppedAreaPixels);
       if (imageData !== null) {
         storage
@@ -140,9 +141,10 @@ export const FormDialog = () => {
           .child(uuidv4())
           .put(imageData)
           .then((snapshot) => snapshot.ref.getDownloadURL())
-          .then((url) => {
-            //Här kommer posten tillbaka, uppdatera context.
-            uploadPost({ ...formData, imgURL: url });
+          .then(async (url) => {
+            let post = await uploadPost({ ...formData, imgURL: url });
+            console.log(post);
+            setPosts([...posts, post.data]);
             handleClose();
           });
       }
