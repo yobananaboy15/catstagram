@@ -143,8 +143,7 @@ export const FormDialog = () => {
           .then((snapshot) => snapshot.ref.getDownloadURL())
           .then(async (url) => {
             let post = await uploadPost({ ...formData, imgURL: url });
-            console.log(post);
-            setPosts([...posts, post.data]);
+            setPosts([post.data, ...posts]);
             handleClose();
           });
       }

@@ -9,14 +9,17 @@ type routeHandler = (
 
 export const getPosts: routeHandler = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 });
+    console.log(req.query);
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip(Number(req.query.offset) - Number(req.query.limit))
+      .limit(Number(req.query.limit));
     res.status(200).json(posts);
   } catch (error) {}
 };
 
 export const addPost: routeHandler = async (req, res) => {
   const post = req.body;
-  console.log(post);
   const newPost = new Post(post);
   try {
     await newPost.save();
