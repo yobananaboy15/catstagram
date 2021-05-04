@@ -1,6 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 
-const url = "http://localhost:5000/posts"
+const url = "http://localhost:5000/posts";
 
-export const getPosts = () => axios.get(url)
-export const uploadPost = (formData: object) => axios.post(url, formData)
+interface Post {
+  _id: object;
+  description?: string;
+  tags?: string;
+  imgURL: string;
+}
+
+export const getPosts = () => axios.get(url);
+export const uploadPost = (formData: object) => axios.post<Post>(url, formData);
